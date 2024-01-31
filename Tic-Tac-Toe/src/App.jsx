@@ -9,26 +9,31 @@ function App() {
     return playerOneLocal ? JSON.parse(playerOneLocal) : '';
 
     })
+
   const [playerTwo, setPlayerTwo] = useState(() =>{
     
   const playerTwoLocal = localStorage.getItem('PlayerTwo');
   return playerTwoLocal ? JSON.parse(playerTwoLocal) : '';
 
   })
+
   const [namesEntered, setNamesEntered] = useState(() =>{
     return localStorage.getItem('NamesEntered') || false
   })
+
   const [currentPlayer, setCurrentPlayer] = useState(() =>{
     if (localStorage.getItem("CurrentPlayer")){
       return JSON.parse(localStorage.getItem("CurrentPlayer"))
       } else {return "X"}
     })
+
   const [board,setBoard] = useState( () =>{
     const localBoard = localStorage.getItem("Board")
     if (localBoard == null) return Array(9).fill('')
 
     return JSON.parse(localBoard)
   })
+
   const [playerOneWins,setPlayerOneWins] = useState(() =>{
     let playerOneWinCount = localStorage.getItem('PlayerOneWins')
     if (playerOneWinCount === null){
@@ -37,6 +42,7 @@ function App() {
       }
     return parseInt(playerOneWinCount)
   })
+
   const [playerTwoWins,setPlayerTwoWins] = useState(() =>{
     let playerTwoWinCount = localStorage.getItem('PlayerTwoWins')
     if (playerTwoWinCount === null){
@@ -44,6 +50,16 @@ function App() {
       localStorage.setItem('PlayerTwoWins',playerTwoWinCount)
       }
     return parseInt(playerTwoWinCount)
+  })
+
+  const [ties,setTies] = useState(() =>{
+    let tieCount = localStorage.getItem('Ties')
+
+    if (tieCount === null){
+      tieCount=0
+      localStorage.setItem('Ties',tieCount)
+      }
+    return parseInt(tieCount)
   })
 
   useEffect(() => {
@@ -54,7 +70,8 @@ function App() {
     localStorage.setItem("PlayerTwoWins",JSON.stringify(playerTwoWins))
     localStorage.setItem("CurrentPlayer",JSON.stringify(currentPlayer))
     localStorage.setItem("Board",JSON.stringify(board))
-    },[playerOne,playerTwo,namesEntered,currentPlayer,board,playerOneWins,playerTwoWins])
+    localStorage.setItem("Ties",JSON.stringify(ties))
+    },[playerOne,playerTwo,namesEntered,currentPlayer,board,playerOneWins,playerTwoWins,ties])
 
   const handleNamesSubmit =() => {
     if(playerOne.trim().length == 0 || playerTwo.trim().length == 0){
@@ -97,6 +114,11 @@ function App() {
       }else if( checkWinner(newBoard) === 'O'){
 
         setPlayerTwoWins(playerTwoWins+1)
+
+        cleanBoard()
+      }else if( checkTie(newBoard) ){
+
+        setTies(ties + 1)
 
         cleanBoard()
       }
@@ -152,6 +174,10 @@ function App() {
   return false;
   })
 
+  const checkTie = (board) => {
+    return board.every((square) => square !== '');
+  };  
+
   const resetGame = () => {
     setPlayerOne('')
     setPlayerTwo('')
@@ -170,6 +196,7 @@ function App() {
         <>
           <h1 className='tittle players'>{playerOne} vs {playerTwo}</h1>
           <h2 className='tittle players'>{playerOne} wins - {playerOneWins} | {playerTwo} wins - {playerTwoWins}</h2>
+          <h3 className='tittle players'>Ties - {ties}</h3>
           <button className='btn reset' onClick={resetGame}>Reset Game</button>
           <Board
             board={board}
