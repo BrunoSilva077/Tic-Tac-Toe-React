@@ -179,6 +179,7 @@ function App() {
   };  
 
   const resetGame = () => {
+    setTies(0)
     setPlayerOne('')
     setPlayerTwo('')
     setNamesEntered(false)
